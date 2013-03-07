@@ -1,0 +1,17 @@
+{
+  "name": "ircbot",
+  "version": "0.0.0",
+  "description": "irc bot with node",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cheerio": "0.10.x",
+    "request": "2.14.x",
+    "irc" : "*"
+  },
+  "repository": "",
+  "author": "babofitos",
+  "license": "BSD"
+}

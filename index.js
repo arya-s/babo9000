@@ -5,6 +5,8 @@ var config = require('./config.js')
       , 'BABO9000'
       , { channels: [config.channel + config.secret]
           , debug:true
+          , floodProtection: true
+          , floodProtectionDelay: 1000
         }
     )
   , request = require('request')
@@ -17,8 +19,11 @@ client.on('message', function (nick, to, text) {
     message(to, text.substring(5))
   }
   //look for .scrim at start of message, make call to url and scrape event times
-  else if (text.indexOf('.scrims') === 0 || text.indexOf('.scrim') === 0) {
-    scrapeSteam()
+  else if (text.indexOf('.scrims') === 0 || text.indexOf('.scrim') === 0 || text.indexOf('.events') === 0) {
+    scrapeSteam(text.split(' ')[1])
+  }
+  else if (text.indexOf('.cd') === 0) {
+    countdown(5)
   }
 })
 
@@ -26,35 +31,42 @@ function message (target, message) {
   client.say(target, message)
 }
 
-function scrapeSteam () {
-  request(config.group, getHTML)
+function countdown (i) {
+  message(config.channel, i.toString())
+  i--
+  if (i>=0) {
+    global.setTimeout(function() {
+      countdown(i)
+    }, 1000)
+  }
 }
 
-function getHTML (error, response, body) {
-  if (error)
-    console.log('error', error)
-  var eventDateBlock
-    , msg = []
-    , done
+function scrapeSteam (limit) {
+  limit = parseInt(limit, 10)
 
-  $ = cheerio.load(body)
-  eventDateBlock = $('#eventListing .eventDateBlock')
-  done = eventDateBlock.length
+  request(config.group, getHTML)
 
-  eventDateBlock.each(getEventDatesAndTimes)
+  function getHTML (error, response, body) {
+    if (error)
+      console.log('error', error)
+    var eventDateBlock
+      , eventTitle
+      , msg = []
+      , done
 
-  function getEventDatesAndTimes () {
-    var dayAndDate
-      , time
-      , $this = $(this)
-      , i = 0
-      , len
+    $ = cheerio.load(body)
+    //#eventListing div contains non expired events
+    eventTitle = $('#eventListing .headlineLink')
+    eventDateBlock = $('#eventListing .eventDateBlock')
+    //know when to break out of each loop
+    done = eventDateBlock.length
 
-    dayAndDate = $this.children().eq(0).text()
-    time = $this.children().eq(2).text()
-    msg.push('Scrim on ' + dayAndDate + ' at ' + time + ' PST')
-    if (msg.length === done) {
-      len = msg.length
+    eventDateBlock.each(getEventDatesAndTimes)
+    
+    function outputEvents () {
+      var i=0
+        , len = msg.length
+
       msgInterval()
 
       function msgInterval () {
@@ -66,6 +78,28 @@ function getHTML (error, response, body) {
         }
       }
     }
+
+    function getEventDatesAndTimes (index, el) {
+      var dayAndDate
+        , time
+        , $this = $(this)
+        , title = eventTitle.eq(index).text()
+
+      dayAndDate = $this.children().eq(0).text()
+      time = $this.children().eq(2).text()
+      msg.push(title + ' ' + dayAndDate + ' at ' + time + ' PST')
+
+      if (!isNaN(limit) && index >= limit-1) {
+        outputEvents()
+        return false
+      }
+
+      if (msg.length === done) {
+        outputEvents()
+      }
+    }
   }
 }
+
+
 

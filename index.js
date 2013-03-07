@@ -10,10 +10,6 @@ var config = require('./config.js')
   , request = require('request')
   , cheerio = require('cheerio')
 
-var steam = {
-  group: 'http://steamcommunity.com/groups/girlbloggers/events?content_only=true'
-}
-
 client.on('message', function (nick, to, text) {
   console.log(nick + ' => ' + to + ': ' + text)
   // look for .say at start of message and echo it to channel
@@ -31,7 +27,7 @@ function message (target, message) {
 }
 
 function scrapeSteam () {
-  request(steam.group, getHTML)
+  request(config.group, getHTML)
 }
 
 function getHTML (error, response, body) {

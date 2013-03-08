@@ -11,23 +11,36 @@ var config = require('./config.js')
     )
   , request = require('request')
   , cheerio = require('cheerio')
-  , events = require('events')
+  , commands = {
+    say: function(nick, to, text) {
+      client.say(to, text.substring(5))
+    }
+    , scrim: function(nick, to, text) {
+      scrapeSteam(text.split(' ')[1])
+    }
+    , scrims: function(nick, to, text) {
+      scrapeSteam(text.split(' ')[1])
+    }
+    , events: function(nick, to, text) {
+      scrapeSteam(text.split(' ')[1])
+    }
+    , cd: function(nick, to, text) {
+      countdown(5)
+    }
+    , time: function(nick, to, text) {
+      getCurrentTime()
+    }
+  }
 
 client.on('message', function (nick, to, text) {
+  var command = text.split(' ')[0].substring(1)
+
   console.log(nick + ' => ' + to + ': ' + text)
-  // look for .say at start of message and echo it to channel
-  if (text.indexOf('.say') === 0) {
-    client.say(to, text.substring(5))
-  }
-  //look for .scrim at start of message, make call to url and scrape event times
-  else if (text.indexOf('.scrims') === 0 || text.indexOf('.scrim') === 0 || text.indexOf('.events') === 0) {
-    scrapeSteam(text.split(' ')[1])
-  }
-  else if (text.indexOf('.cd') === 0) {
-    countdown(5)
-  }
-  else if (text.indexOf('.time') === 0) {
-    getCurrentTime()
+  
+  if (text.indexOf(config.trigger) === 0) {
+    if (commands[command]) {
+      commands[command](nick, to, text)
+    }
   }
 })
 

@@ -4,19 +4,20 @@ var config = require('./config.js')
       'irc.quakenet.org'
       , 'BABO9000'
       , { channels: [config.channel + config.secret]
-          , debug:true
+          , debug: true
           , floodProtection: true
           , floodProtectionDelay: 1000
         }
     )
   , request = require('request')
   , cheerio = require('cheerio')
+  , events = require('events')
 
 client.on('message', function (nick, to, text) {
   console.log(nick + ' => ' + to + ': ' + text)
   // look for .say at start of message and echo it to channel
   if (text.indexOf('.say') === 0) {
-    message(to, text.substring(5))
+    client.say(to, text.substring(5))
   }
   //look for .scrim at start of message, make call to url and scrape event times
   else if (text.indexOf('.scrims') === 0 || text.indexOf('.scrim') === 0 || text.indexOf('.events') === 0) {
@@ -35,15 +36,11 @@ function getCurrentTime () {
     , output = [d.getHours(), d.getMinutes(), d.getSeconds()].join(':')
   
   output += ' PST'
-  message(config.channel, output)
-}
-
-function message (target, message) {
-  client.say(target, message)
+  client.say(config.channel, output)
 }
 
 function countdown (i) {
-  message(config.channel, i.toString())
+  client.say(config.channel, i.toString())
   i--
   if (i>=0) {
     global.setTimeout(function() {
@@ -81,7 +78,7 @@ function scrapeSteam (limit) {
       msgInterval()
 
       function msgInterval () {
-        message(config.channel, msg[i++])
+        client.say(config.channel, msg[i++])
         if (i<len) {
           global.setTimeout(function() {
             msgInterval()

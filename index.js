@@ -25,7 +25,18 @@ client.on('message', function (nick, to, text) {
   else if (text.indexOf('.cd') === 0) {
     countdown(5)
   }
+  else if (text.indexOf('.time') === 0) {
+    getCurrentTime()
+  }
 })
+
+function getCurrentTime () {
+  var d = new Date(Date.now()-(3*1000*60*60))
+    , output = [d.getHours(), d.getMinutes(), d.getSeconds()].join(':')
+  
+  output += ' PST'
+  message(config.channel, output)
+}
 
 function message (target, message) {
   client.say(target, message)

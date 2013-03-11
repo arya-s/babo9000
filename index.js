@@ -45,22 +45,24 @@ client.on('message', function (nick, to, text) {
 })
 
 function getCurrentTime (client) {
-  var d = new Date(Date.now()-(3*1000*60*60))
-    , hours = d.getHours()
-    , minutes = d.getMinutes()
-    , seconds = d.getSeconds()
-    , output = [hours, minutes, seconds]
+  // var d = new Date(Date.now()-(3*1000*60*60))
+  //   , hours = d.getHours()
+  //   , minutes = d.getMinutes()
+  //   , seconds = d.getSeconds()
+  //   , output = [hours, minutes, seconds]
 
-  for (var i=0,len=output.length;i<len;i++) {
-    if (output[i] < 10) {
-      output[i] = '0' + output[i].toString()
-    }
-    if (i === output.length-1) {
-      output = output.join(':')
-      output += ' PST'
-      client.say(config.channel, output)
-    }
-  }
+  // for (var i=0,len=output.length;i<len;i++) {
+  //   if (output[i] < 10) {
+  //     output[i] = '0' + output[i].toString()
+  //   }
+  //   if (i === output.length-1) {
+  //     output = output.join(':')
+  //     output += ' PST'
+  //     client.say(config.channel, output)
+  //   }
+  // }
+  var time = new Date(Date.now())
+  client.say(config.channel, time)
 }
 
 function countdown (i) {
@@ -76,7 +78,13 @@ function countdown (i) {
 function scrapeSteam (limit, client) {
   limit = parseInt(limit, 10)
 
-  request(config.group, getHTML)
+  //set cookie for US east time
+  //jar required here *I think* because otherwise other timezoneOffset cookie
+  //will override the manually added one
+  var jar = request.jar()
+  jar.add(request.cookie('timezoneOffset=-14400,0'))
+
+  request({url: config.group, jar: jar}, getHTML)
 
   function getHTML (error, response, body) {
     if (error)
@@ -116,10 +124,11 @@ function scrapeSteam (limit, client) {
         , time
         , $this = $(this)
         , title = eventTitle.eq(index).text()
+        , offset = ((new Date()).getTimezoneOffset())/60
 
       dayAndDate = $this.children().eq(0).text()
       time = $this.children().eq(2).text()
-      msg.push(title + ' ' + dayAndDate + ' at ' + time + ' PST')
+      msg.push(title + ' ' + dayAndDate + ' at ' + time + ' UTC -' + offset)
 
       if (!isNaN(limit) && index >= limit-1) {
         outputEvents()

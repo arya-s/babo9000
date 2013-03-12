@@ -1,4 +1,5 @@
 var config = require('./config.js')
+  , util = require('util')
   , irc = require('irc')
   , client = new irc.Client(
       'irc.quakenet.org'
@@ -32,7 +33,7 @@ var config = require('./config.js')
       getCurrentTime(client)
     }
     , mail: function(nick, to, text, client) {
-      storeMessage(nick, text, client)
+      storeMessage(nick, to, text, client)
     }
   }
 
@@ -49,22 +50,21 @@ client.on('message', function (nick, to, text) {
 })
 
 client.on('join', function (channel, nick, message) {
-  console.log('channel', channel)
-  console.log('mail ', messages[nick])
   if (messages.hasOwnProperty(nick)) {
     client.say(channel, messages[nick])
     messages[nick] = null
   }
 })
 
-function storeMessage (sender, text, client) {
+function storeMessage (sender, to, text, client) {
   var recepient = text.split(' ')
     , message
 
   if (!recepient) return
-  message = recepient[1] + ', you have mail from ' + sender + ': ' 
-            + recepient.splice(2).join(' ')
+
+  message = util.format('%s, you have mail from %s: %s', recepient[1], sender, recepient.splice(2).join(' '))
   messages[recepient[1]] = message
+  client.say(to, 'Mail stored. Relaying to recepient on next join')
 }
 
 function getCurrentTime (client) {
@@ -151,7 +151,7 @@ function scrapeSteam (limit, client) {
 
       dayAndDate = $this.children().eq(0).text()
       time = $this.children().eq(2).text()
-      msg.push(title + ' ' + dayAndDate + ' at ' + time + ' UTC -' + offset)
+      msg.push(util.format('%s %s at %s UTC -%s', title, dayAndDate, time, offset))
 
       if (!isNaN(limit) && index >= limit-1) {
         outputEvents()

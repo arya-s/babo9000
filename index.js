@@ -11,6 +11,7 @@ var config = require('./config.js')
     )
   , request = require('request')
   , cheerio = require('cheerio')
+  , messages = {}
   , commands = {
     say: function(nick, to, text, client) {
       client.say(to, text.substring(5))
@@ -30,6 +31,9 @@ var config = require('./config.js')
     , time: function(nick, to, text, client) {
       getCurrentTime(client)
     }
+    , mail: function(nick, to, text, client) {
+      storeMessage(nick, text, client)
+    }
   }
 
 client.on('message', function (nick, to, text) {
@@ -43,6 +47,25 @@ client.on('message', function (nick, to, text) {
     }
   }
 })
+
+client.on('join', function (channel, nick, message) {
+  console.log('channel', channel)
+  console.log('mail ', messages[nick])
+  if (messages.hasOwnProperty(nick)) {
+    client.say(channel, messages[nick])
+    messages[nick] = null
+  }
+})
+
+function storeMessage (sender, text, client) {
+  var recepient = text.split(' ')
+    , message
+
+  if (!recepient) return
+  message = recepient[1] + ', you have mail from ' + sender + ': ' 
+            + recepient.splice(2).join(' ')
+  messages[recepient[1]] = message
+}
 
 function getCurrentTime (client) {
   // var d = new Date(Date.now()-(3*1000*60*60))
@@ -80,7 +103,7 @@ function scrapeSteam (limit, client) {
 
   //set cookie for US east time
   //jar required here *I think* because otherwise other timezoneOffset cookie
-  //will override the manually added one
+  //set by the site will override the manually added one
   var jar = request.jar()
   jar.add(request.cookie('timezoneOffset=-14400,0'))
 

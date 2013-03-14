@@ -105,8 +105,9 @@ function scrapeSteam (limit, client) {
   //jar required here *I think* because otherwise other timezoneOffset cookie
   //set by the site will override the manually added one
   var jar = request.jar()
-  jar.add(request.cookie('timezoneOffset=-14400,0'))
+    , timezoneoffset = util.format('timezoneOffset=%s,0', config.timezoneoffset)
 
+  jar.add(request.cookie(timezoneoffset))
   request({url: config.group, jar: jar}, getHTML)
 
   function getHTML (error, response, body) {

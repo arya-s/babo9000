@@ -4,6 +4,8 @@ var config = {
   //event content is ajaxed so must use ?content_only for the times and dates
   , group: 'http://steamcommunity.com/groups/girlbloggers/events?content_only=true'
   , trigger: '.'
+  //utc offset for event times
+  , timezoneoffset: '-14400'
 }
 
 module.exports = config

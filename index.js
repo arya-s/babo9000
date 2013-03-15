@@ -100,6 +100,7 @@ function countdown (i) {
 
 function scrapeSteam (limit, client) {
   limit = parseInt(limit, 10)
+  if (isNaN(limit) || limit <= 0) return
 
   //set cookie for US east time
   //jar required here *I think* because otherwise other timezoneOffset cookie
@@ -154,7 +155,7 @@ function scrapeSteam (limit, client) {
       time = $this.children().eq(2).text()
       msg.push(util.format('%s %s at %s UTC -%s', title, dayAndDate, time, offset))
 
-      if (!isNaN(limit) && index >= limit-1) {
+      if (index >= limit-1) {
         outputEvents()
         return false
       }

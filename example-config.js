@@ -1,6 +1,6 @@
 var config = {
   channel: '#yourchannel'
-  , secret: ' secret'
+  , secret: 'secret'
   , group: 'http://steamcommunity.com/groups/girlbloggers/'
   , trigger: '.'
   //utc offset for event times

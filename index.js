@@ -4,7 +4,7 @@ var config = require('./config.js')
   , client = new irc.Client(
       'irc.quakenet.org'
       , 'BABO9000'
-      , { channels: [config.channel + config.secret]
+      , { channels: [config.channel + ' ' + config.secret]
         , debug: true
         , floodProtection: true
         , floodProtectionDelay: 1000

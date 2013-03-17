@@ -24,9 +24,16 @@ function commands (command, nick, to, text, client) {
     case 'mail':
       storeMessage(nick, to, text, client)
       break
+    case 'rtd':
+      rollDice(nick, to, client)
     default:
       break
   }
+}
+
+function rollDice (nick, to, client) {
+  var random = Math.ceil(Math.random() * 6)
+  client.say(to, nick + ' has rolled a ' + random)
 }
 
 function storeMessage (sender, to, text, client) {

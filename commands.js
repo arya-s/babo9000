@@ -26,11 +26,19 @@ function commands (command, nick, to, text, client) {
       break
     case 'rtd':
       rollDice(nick, to, client)
+      break
     case '8ball':
       eightball(nick, to, client)
+      break
+    case 'whois':
+      client.whois(nick, whois)
     default:
       break
   }
+}
+
+function whois(info) {
+  console.log(info)
 }
 
 function eightball (nick, to, client) {

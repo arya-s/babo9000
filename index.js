@@ -3,9 +3,9 @@ var config = require('./config.js')
   , irc = require('irc')
   , client = new irc.Client(
       'irc.quakenet.org'
-      , 'BABO9000'
+      , config.username
       , { channels: [config.channel + ' ' + config.secret]
-        , debug: true
+        , debug: false
         , floodProtection: true
         , floodProtectionDelay: 1000
         }
@@ -30,7 +30,8 @@ client.on('join', function (channel, nick, message) {
   }
 })
 
-
-
+client.on('names', function(channel, nicks) {
+  client.say(channel, config.joinMsg)
+})
 
 

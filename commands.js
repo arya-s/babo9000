@@ -30,8 +30,12 @@ function commands (command, nick, to, text, client) {
     case '8ball':
       eightball(nick, to, client)
       break
+    case 'ugc':
+      client.say(to, config.ugc)
+      break
     case 'whois':
       client.whois(nick, whois)
+      break
     default:
       break
   }

@@ -3,6 +3,11 @@ var request = require('request')
   , messages = require('./messages.js')
   , util = require('util')
   , config = require('./config.js')
+  , sqlite3 = require('sqlite3').verbose()
+  , db = new sqlite3.Database('dict.sqlite', 'sqlite3.OPEN_READONLY', function() {
+    console.log('database opened')
+    db.run("CREATE TABLE dict (kanji TEXT, kana TEXT, entry TEXT)")
+  })
 
 function commands (command, nick, to, text, client) {
   switch (command) {
@@ -33,12 +38,30 @@ function commands (command, nick, to, text, client) {
     case 'ugc':
       client.say(to, config.ugc)
       break
+    case 'dict':
+      dict(to, text, client)
+      break
     case 'whois':
       client.whois(nick, whois)
       break
     default:
       break
   }
+}
+
+function dict (to, text, client) {
+  var word = text.split(' ')[1]
+
+  db.get("SELECT * FROM dict WHERE kanji=$word OR kana=$word", word, function(err, row) {
+    if (err) client.say('error')
+    else {
+      if (row && row.entry) {
+        client.say(to, row.entry)
+      } else {
+        client.say(to, "I don't know that word")
+      }
+    }
+  })
 }
 
 function whois(info) {

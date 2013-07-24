@@ -9,6 +9,7 @@ var request = require('request')
     db.run("CREATE TABLE dict (kanji TEXT, kana TEXT, entry TEXT)")
   })
 
+
 function commands (command, nick, to, text, client) {
   switch (command) {
     case 'say':

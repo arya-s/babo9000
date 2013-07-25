@@ -5,12 +5,12 @@ var config = require('./config.js')
       'irc.quakenet.org'
       , config.username
       , { channels: [config.channel + ' ' + config.secret]
-        , debug: false
+        , debug: true
         , floodProtection: true
         , floodProtectionDelay: 1000
         }
     )
-  , commands = require('./commands.js')
+  , loader = require('./loader.js')
   , messages = require('./messages.js')
   , parser = require('./parser.js')
   , cronJob = require('cron').CronJob
@@ -20,8 +20,9 @@ client.on('message', function (nick, to, text) {
 
   // console.log(nick + ' => ' + to + ': ' + text)
   
+  //load corresponding command from file
   if (text.indexOf(config.trigger) === 0) {
-    commands(command, nick, to, text, client)
+    loader(command, nick, to, text, client)
   }
 })
 

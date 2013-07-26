@@ -23,8 +23,9 @@ module.exports = function(channel, client) {
       re += currentFilter.join(')(?=.*')
       re += ').+'
       var reobj = new RegExp(re, "i")
-      console.log(reobj, item.title)
+      console.log('item.title', item.title)
       if (item.title.match(reobj) != null) {
+        console.log('matched')
         //say in irc
         client.say(channel, item.title + ' ' + item.link)
       }

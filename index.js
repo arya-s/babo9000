@@ -31,17 +31,14 @@ client.on('join', function (channel, nick, message) {
     client.say(channel, messages[nick])
     messages[nick] = null
   }
-
-  //start parser on channel join, pass client instance
-  //cron every 30 minutes
-  var fetchRSS = new cronJob('0 */30 * * * *', function() {
-    parser(channel, client)
-  }, null, true).start()
-  
 })
 
 client.on('names', function(channel, nicks) {
   client.say(channel, config.joinMsg)
+  //start parser on channel join, pass client instance
+  //cron every 30 minutes
+  var fetchRSS = new cronJob('0 */1 * * * *', function() {
+    parser(channel, client)
+  }, null, true).start()
 })
-
 

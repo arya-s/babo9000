@@ -1,7 +1,13 @@
 var request = require('request')
   , cheerio = require('cheerio')
   , util = require('util')
-  , config = require('../config.js')
+
+//settings
+var timezoneoffset = '-14400'
+  , group = 'http://steamcommunity.com/groups/girlbloggers/'
+  
+//event content is ajaxed so must use ?content_only for the times and dates
+group += 'events?content_only=true'
 
 module.exports = function(irc) {
   var limit = irc.text.trim().split(' ')[1]
@@ -14,10 +20,10 @@ module.exports = function(irc) {
   //jar required here *I think* because otherwise other timezoneOffset cookie
   //set by the site will override the manually added one
   var jar = request.jar()
-    , timezoneoffset = util.format('timezoneOffset=%s,0', config.timezoneoffset)
+    , timezoneoffset = util.format('timezoneOffset=%s,0', timezoneoffset)
 
   jar.add(request.cookie(timezoneoffset))
-  request({url: config.group, jar: jar}, getHTML)
+  request({url: group, jar: jar}, getHTML)
 
   function getHTML (error, response, body) {
     if (error)

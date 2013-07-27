@@ -17,7 +17,7 @@ module.exports = function(channel, client) {
     var stream = this
       , item = stream.read()
 
-    if (found.indexOf(item.title) != -1) {
+    if (found.indexOf(item.title) == -1) {
       for (var i=0;i<len;i++) {
         //read filters from somewhere, escape any regex specials
         var escapeBrackets = filter[i].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")

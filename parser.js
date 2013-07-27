@@ -4,6 +4,9 @@ var FeedParser = require('feedparser')
 var filter = ['[utw-mazui] railgun', '[commie] love lab']
   , len = filter.length
 
+//store already parsed items in memory so they are not triggered on every cron pass
+var found = []
+
 module.exports = function(channel, client) {
   request('https://www.tokyotosho.info/rss.php?filter=1')
   .pipe(new FeedParser())
@@ -25,9 +28,12 @@ module.exports = function(channel, client) {
       var reobj = new RegExp(re, "i")
       console.log('item.title', item.title)
       if (item.title.match(reobj) != null) {
-        console.log('matched')
-        //say in irc
-        client.say(channel, item.title + ' ' + item.link)
+        if (found.indexOf(item.title) == -1) {
+          console.log('matched')
+          found.push(item.title)
+          //say in irc
+          client.say(channel, item.title + ' ' + item.link)
+        }
       }
     }
   })

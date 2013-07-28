@@ -1,5 +1,4 @@
 var config = require('./config.js')
-  , util = require('util')
   , irc = require('irc')
   , client = new irc.Client(
       'irc.quakenet.org'
@@ -15,13 +14,16 @@ var config = require('./config.js')
   , parser = require('./parser.js')
   , cronJob = require('cron').CronJob
 
-client.on('message', function (nick, to, text) {
-  var command = text.split(' ')[0].substring(1)
+client.on('message', function (nick, to, input) {
+  var split = input.split(' ')
+    , command = split[0].substring(1)
+    //handle any extra whitespace b/w command and input
+    , text = split.splice(1).join(' ').trim()
 
   // console.log(nick + ' => ' + to + ': ' + text)
   
   //load corresponding command from file
-  if (text.indexOf(config.trigger) === 0) {
+  if (input.indexOf(config.trigger) === 0) {
     loader(command, nick, to, text, client)
   }
 })

@@ -5,7 +5,8 @@ var sqlite3 = require('sqlite3').verbose()
   })
 
 module.exports = function(irc) {
-  var word = irc.text.split(' ')[1]
+  var word = irc.text
+  console.log('word', word)
 
   db.get("SELECT * FROM dict WHERE kanji=$word OR kana=$word", word, function(err, row) {
     if (err) irc.client.say('error')

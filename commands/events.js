@@ -10,7 +10,7 @@ var timezoneoffset = '-14400'
 group += 'events?content_only=true'
 
 module.exports = function(irc) {
-  var limit = irc.text.trim().split(' ')[1]
+  var limit = irc.text
   //prevent non positive integers or alpha chars from triggering
   if (typeof limit === 'string') {
     limit = parseInt(limit, 10)

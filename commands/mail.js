@@ -1,5 +1,5 @@
 var util = require('util')
-  , messages = require('../messages.js')
+  , messages = require('../lib/messages.js')
 
 module.exports = function(irc) {
   var recepient = irc.text.split(' ')

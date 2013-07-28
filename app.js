@@ -1,2 +1,2 @@
 require('./server.js')
-require('./index.js')
+require('./lib/irc.js')

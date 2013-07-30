@@ -12,7 +12,6 @@ module.exports = function(irc) {
     } else if (subcommand[0] == 'del') {
       irc.db.deleteFilter({filter: subcommand.splice(1).join(' ')}, function(err, numOfRemoved) {
         if (err) {
-          console.log('err', err)
           irc.client.say(irc.to, 'error deleting filter from db')
         } else if (numOfRemoved > 0) {
           irc.client.say(irc.to, 'filter deleted')

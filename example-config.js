@@ -3,7 +3,7 @@ var config = {
   , secret: 'secret'
   , trigger: '.'
   , username: ''
-  , joinMsg: 'hello world'
+  , joinMsg: ['hello world']
 }
 
 module.exports = config

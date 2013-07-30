@@ -10,11 +10,13 @@ module.exports = function(irc) {
         }
       })
     } else if (subcommand[0] == 'del') {
-      irc.db.deleteFilter({filter: subcommand.splice(1).join(' ')}, function(err) {
+      irc.db.deleteFilter({filter: subcommand.splice(1).join(' ')}, function(err, numOfRemoved) {
         if (err) {
           irc.client.say(irc.to, 'error deleting filter from db')
-        } else {
+        } else if (numOfRemoved > 0) {
           irc.client.say(irc.to, 'filter deleted')
+        } else {
+          irc.client.say(irc.to, 'filter not found')
         }
       })
     } else {

@@ -19,6 +19,18 @@ module.exports = function(irc) {
           irc.client.say(irc.to, 'filter not found')
         }
       })
+    } else if (subcommand[0] == 'recent') {
+      irc.db.recentParsed(function(err, shows) {
+        if (err) {
+          irc.client.say(irc.to, 'error retrieving recently parsed shows')
+        } else {
+          //array of objects
+          shows = shows.map(function(e) {
+            return e.show + ' ' + e.link
+          })
+          irc.client.say(irc.to, shows)
+        }
+      })
     } else {
       irc.client.say(irc.to, 'not a valid command')
     }

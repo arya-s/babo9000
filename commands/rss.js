@@ -28,7 +28,7 @@ module.exports = function(irc) {
           shows = shows.map(function(e) {
             return e.show + ' ' + e.link
           })
-          irc.client.say(irc.to, shows)
+          irc.client.say(irc.to, shows.join(' '))
         }
       })
     } else {

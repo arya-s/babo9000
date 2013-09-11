@@ -4,6 +4,6 @@
 require('./lib/db.js')(app)
 
 function app(db) {
-  require('./server.js')
+  require('./server.js')(db)
   require('./lib/irc.js')(db)
 }

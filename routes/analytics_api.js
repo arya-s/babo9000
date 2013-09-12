@@ -11,7 +11,11 @@ module.exports = function(app, db) {
 
         docs.forEach(function(doc, i) {
           total += doc.activity
-          hosts.push({host: doc.host, activity: doc.activity})
+          hosts.push({ 
+            host: doc.host
+          , activity: doc.activity
+          , nick: doc.nick
+          })
           if (i == end) {
             res.json({hosts: hosts, total: total})
           }

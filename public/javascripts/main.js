@@ -1,7 +1,7 @@
 function formatData(data) {
   var result = []
   data.hosts.forEach(function(doc) {
-    result.push([doc.host, doc.activity/data.total])
+    result.push([doc.nick, doc.activity/data.total])
   })
   return result
 }

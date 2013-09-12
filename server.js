@@ -27,7 +27,7 @@ module.exports = function(db) {
   });
 
   app.get('/', routes.index);
-  require('./routes/analytics')(app, db)
+  require('./routes/analytics')(app)
   require('./routes/analytics_api')(app, db)
 
   http.createServer(app).listen(app.get('port'), function(){

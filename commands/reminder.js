@@ -68,6 +68,7 @@ module.exports = function(irc) {
 
     if (splitText.length < 2) {
       irc.client.say(irc.to, 'you need a message')
+      return false
     } else {
       time = splitText.slice(0)
       msg = splitText.slice(1)
@@ -82,6 +83,7 @@ module.exports = function(irc) {
   }
 
   var doc = splitTimeFromMsg(irc.text)
+  if (!doc) { return }
 
   irc.db.setReminder(doc, function(err) {
 

@@ -9,16 +9,14 @@ module.exports = function(irc) {
   function parseTime(input) {
     //this is crap. i hate regex
     var time = [
-      input.match(/\dd/i)
-    , input.match(/\dh/i)
-    , input.match(/\dm/i)
-    , input.match(/\ds/i)
+      input.match(/\d+d/i)
+    , input.match(/\d+h/i)
+    , input.match(/\d+m/i)
+    , input.match(/\d+s/i)
     ]
     if (!validDate(time)) {
-      irc.client.say(irc.to, 'enter a valid date. the format is Xd Xh Xm Xs')
+      irc.client.say(irc.to, 'enter a valid date. the format is XdXhXmXs')
     }
-    console.log('converint', convertInt(time))
-    console.log('convertime', convertTime(convertInt(time)))
     var msTotal = totalTime(convertTime(convertInt(time)))
     return msTotal
   }
@@ -68,9 +66,13 @@ module.exports = function(irc) {
       , time
       , msg
 
-    time = splitText.splice(0, splitText.length - 2)
-    msg = splitText.splice(splitText.length - 2)
-
+    if (splitText.length < 2) {
+      irc.client.say(irc.to, 'you need a message')
+    } else {
+      time = splitText.slice(0)
+      msg = splitText.slice(1)
+    }
+    console.log('msg', msg)
     return {
       born: new Date().getTime()
     , due: parseTime(time.join(''))

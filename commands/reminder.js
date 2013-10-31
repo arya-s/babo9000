@@ -16,6 +16,7 @@ module.exports = function(irc) {
     ]
     if (!validDate(time)) {
       irc.client.say(irc.to, 'enter a valid date. the format is XdXhXmXs')
+      return false
     }
     var msTotal = totalTime(convertTime(convertInt(time)))
     return msTotal
@@ -36,17 +37,13 @@ module.exports = function(irc) {
 
   //this is crap
   function convertTime(t) {
-    var i = 0
+    var i = 60*60*1000
     return t.map(function(e, indx) {
       if (!e) { 
         e = 0
       }
       if (indx == 0) {
         e *= 24*60*60*1000
-        i = 60*60*1000
-      }
-      else if (indx == 3) {
-        return e*1000
       } else {
         e *= i
         i /= 60
@@ -73,20 +70,23 @@ module.exports = function(irc) {
       time = splitText.slice(0)
       msg = splitText.slice(1)
     }
-    console.log('msg', msg)
+    //eror checking
+    var due = parseTime(time.join(''))
+    if (!due) { return false }
+
     return {
       born: new Date().getTime()
-    , due: parseTime(time.join(''))
+    , due: due
     , setter: irc.nick
     , msg: msg.join(' ')
     }
   }
 
   var doc = splitTimeFromMsg(irc.text)
+  //error checking
   if (!doc) { return }
 
   irc.db.setReminder(doc, function(err) {
-
     if (err) {
       irc.client.say(irc.to, 'error setting your reminder')
     } else {

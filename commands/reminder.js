@@ -6,20 +6,11 @@
 //if time ended during bot disc, simply alert the user once the bot inits
 //probably do not need to keep this data, purge any completed reminders
 module.exports = function(irc) {
-  function parseTime(input) {
-    //this is crap. i hate regex
-    var time = [
-      input.match(/\d+d/i)
-    , input.match(/\d+h/i)
-    , input.match(/\d+m/i)
-    , input.match(/\d+s/i)
-    ]
-    if (!validDate(time)) {
-      irc.client.say(irc.to, 'enter a valid date. the format is XdXhXmXs')
-      return false
-    }
-    var msTotal = totalTime(convertTime(convertInt(time)))
-    return msTotal
+  function parseTime(time) {
+    //given an array with string elements inside
+    //e.g. ['3d', '2h', '2m', '1s']
+    //convert all elements into int and calculate total into time
+    return totalTime(convertTime(convertInt(time)))
   }
 
   function validDate(t) {
@@ -29,8 +20,10 @@ module.exports = function(irc) {
   }
 
   function convertInt(t) {
+    //strips chars from string as well as making into int
+    //makes null into 0
     return t.map(function(e) {
-      if (e === null) return null
+      if (e === null) return 0
       else return parseInt(e, 10)
     })
   }
@@ -39,9 +32,6 @@ module.exports = function(irc) {
   function convertTime(t) {
     var i = 60*60*1000
     return t.map(function(e, indx) {
-      if (!e) { 
-        e = 0
-      }
       if (indx == 0) {
         e *= 24*60*60*1000
       } else {
@@ -58,34 +48,55 @@ module.exports = function(irc) {
     }, 0)
   }
 
-  function splitTimeFromMsg(text) {
-    var splitText = text.split(' ')
-      , time
-      , msg
-
-    if (splitText.length < 2) {
-      irc.client.say(irc.to, 'you need a message')
-      return false
-    } else {
-      time = splitText.slice(0)
-      msg = splitText.slice(1)
-    }
-    //eror checking
-    var due = parseTime(time.join(''))
-    if (!due) { return false }
-
+  function createDoc(msg, time) {
     return {
       born: new Date().getTime()
-    , due: due
+    , due: parseTime(time)
     , setter: irc.nick
-    , msg: msg.join(' ')
+    , msg: msg
     }
   }
 
-  var doc = splitTimeFromMsg(irc.text)
-  //error checking
-  if (!doc) { return }
+  function isValidTime(time) {
+    //if there is an ommited portion of time, 
+    //that particular element is null
+    var parsed = [ 
+      time.match(/\d+d/i)
+    , time.match(/\d+h/i)
+    , time.match(/\d+m/i)
+    , time.match(/\d+s/i)
+    ]
+    var isValidTime = parsed.some(function(e) {
+      return e !== null
+    })
+    if (!isValidTime) {
+      return false
+    } else {
+      return parsed
+    }
+  }
 
+  function isValidMsg(text) {
+    return text.length >= 2
+  }
+
+  //first split user input into time and msg
+  var split = irc.text.split(' ')
+    , parsedTime = isValidTime(split[0])
+  //if time does not pass regex, output this error
+  if (!parsedTime) {
+    irc.client.say(irc.to, 'enter a valid date. the format is XdXhXmXs')
+    return false
+  }
+  //if there is no msg, output this error
+  if (!isValidMsg(split)) {
+    irc.client.say(irc.to, 'you need a message')
+    return false
+  } else {
+  //if pass, then create document 
+    var doc = createDoc(split[1], parsedTime)
+  }
+  //insert this doc into db
   irc.db.setReminder(doc, function(err) {
     if (err) {
       irc.client.say(irc.to, 'error setting your reminder')

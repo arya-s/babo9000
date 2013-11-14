@@ -1,15 +1,14 @@
-//highlight user with a message in the future based on user input
-//using settimeout
+//highlight user with a message in the future based on user input using settimeout
 //on command execution, store in the db the time set
-//incase the bot eofs, we can retrieve any uncompleted reminders 
-//on bot init by calculating the time difference
+//incase the bot eofs, we can retrieve any uncompleted reminders on bot 
+//init by calculating the time difference
 //if time ended during bot disc, simply alert the user once the bot inits
 //probably do not need to keep this data, purge any completed reminders
 module.exports = function(irc) {
   function parseTime(time) {
     //given an array with string elements inside
     //e.g. ['3d', '2h', '2m', '1s']
-    //convert all elements into int and calculate total into time
+    //convert all elements into int and calculate total into milliseconds
     return totalTime(convertTime(convertInt(time)))
   }
 

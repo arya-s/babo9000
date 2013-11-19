@@ -82,6 +82,7 @@ module.exports = function(irc) {
   //first split user input into time and msg
   var split = irc.text.split(' ')
     , parsedTime = isValidTime(split[0])
+
   //if time does not pass regex, output this error
   if (!parsedTime) {
     irc.client.say(irc.to, 'enter a valid date. the format is XdXhXmXs')

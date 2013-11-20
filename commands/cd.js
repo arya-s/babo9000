@@ -54,13 +54,22 @@ module.exports = function countdown(irc) {
   function isViableInput(input) {
     //begin requires 2 subcommands, others require only 1
     //only set numParticipants on begin
-    if (input[0] == 'begin') {
-      setNumParticipants(input[1])
-      return isViableSubCommand(input[0]) && isViableCountdownNumber(input[1])
-    }
-    else {
+    if (isBegin(input)) {
+      if (!isWaiting) {
+        input[1] = parseInt(input[1], 10)
+        setNumParticipants(input[1])
+        return isViableSubCommand(input[0]) && isViableCountdownNumber(input[1])
+      } else {
+        irc.client.say(irc.to, 'A countdown wait is already in progress.')
+        return false
+      }
+    } else {
       return isViableSubCommand(input[0])
     }
+  }
+
+  function isBegin(input) {
+    return input[0] == 'begin'
   }
 
   function setNumParticipants(n) {
@@ -108,19 +117,17 @@ module.exports = function countdown(irc) {
   function requiresWait(fn, irc) {
     //allow begin to run if not waiting
     //inverse for every other function
-    if (fn == 'begin' && !isWaiting) {
-      countDownCommands[fn](irc)
+    if (fn == 'begin') {
+      return countDownCommands[fn](irc)
     }
     else if (isWaiting) {
-      countDownCommands[fn](irc)
+      return countDownCommands[fn](irc)
     }
   }
 
   var input = irc.text.split(' ')
-  input[1] = parseInt(input[1], 10)
 
   if (!isViableInput(input)) {
-    validCommands(irc)
     return
   }
 

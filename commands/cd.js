@@ -6,7 +6,11 @@ var util = require('util')
 module.exports = function countdown(irc) {
   var countDownCommands = {
     ready: function(irc) {
-      participants.push(irc.nick)
+      if (participants.indexOf(irc.nick) < 0) {
+        participants.push(irc.nick)
+      } else {
+        irc.client.say(irc.to, util.format('You are already in the queue %s.', irc.nick))
+      }
       if (participants.length == numParticipants) {
         countdown(irc)
         doneWaiting()
@@ -65,7 +69,7 @@ module.exports = function countdown(irc) {
 
   function countdown(irc) {
     var i = 3
-    
+
     if (participants.length > 0) {
       irc.client.say(irc.to, util.format('%s, starting countdown', participants.join(', ')))
     }

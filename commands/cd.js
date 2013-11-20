@@ -27,6 +27,7 @@ module.exports = function countdown(irc) {
     }
 
   , go: function(irc) {
+      irc.client.say(irc.to, util.format('Starting without all participants being ready.'))
       countdown(irc)
       doneWaiting()
     }
@@ -51,21 +52,8 @@ module.exports = function countdown(irc) {
     return !isNaN(number)
   }
 
-  function isViableInput(input) {
-    //begin requires 2 subcommands, others require only 1
-    //only set numParticipants on begin
-    if (isBegin(input)) {
-      if (!isWaiting) {
-        input[1] = parseInt(input[1], 10)
-        setNumParticipants(input[1])
-        return isViableSubCommand(input[0]) && isViableCountdownNumber(input[1])
-      } else {
-        irc.client.say(irc.to, 'A countdown wait is already in progress.')
-        return false
-      }
-    } else {
-      return isViableSubCommand(input[0])
-    }
+  function setParticipants(input) {
+    setNumParticipants(input[1])
   }
 
   function isBegin(input) {
@@ -73,6 +61,8 @@ module.exports = function countdown(irc) {
   }
 
   function setNumParticipants(n) {
+    n = parseInt(n, 10)
+    console.log('n', n)
     numParticipants = n
   }
 
@@ -100,7 +90,7 @@ module.exports = function countdown(irc) {
 
     //fn is a string, so use brackets to access
     var fn = commands[commandIndex]
-    requiresWait(fn, irc)
+    countDownCommands[fn](irc)
   }
 
   function validCommands(irc) {
@@ -114,21 +104,32 @@ module.exports = function countdown(irc) {
     isWaiting = false
   }
 
-  function requiresWait(fn, irc) {
-    //allow begin to run if not waiting
-    //inverse for every other function
-    if (fn == 'begin') {
-      return countDownCommands[fn](irc)
-    }
-    else if (isWaiting) {
-      return countDownCommands[fn](irc)
-    }
-  }
-
   var input = irc.text.split(' ')
 
-  if (!isViableInput(input)) {
-    return
+  //we need to process the second input only if subcommand is begin,
+  //and we should only set the new number if we are not currently 
+  //in the middle of a countdown wait
+  if (isBegin(input)) {
+    if (!isWaiting) {
+      setParticipants(input, irc)
+      if ( !(isViableSubCommand(input[0]) && isViableCountdownNumber(input[1])) ) {
+        validCommands(irc)
+        return
+      }
+    } else {
+      irc.client.say(irc.to, 'A countdown wait is already in progress.')
+      return
+    }
+  //if subcommand is anything else, don't check for number
+  //only begin requires a non wait. every other subcommand applies to a waiting state
+  } else {
+    if (!isViableSubCommand(input[0])) {
+      validCommands(irc)
+      return
+    }
+    if (!isWaiting) {
+      return
+    }
   }
 
   commandController(input[0], irc)

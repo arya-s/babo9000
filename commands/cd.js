@@ -62,7 +62,6 @@ module.exports = function countdown(irc) {
 
   function setNumParticipants(n) {
     n = parseInt(n, 10)
-    console.log('n', n)
     numParticipants = n
   }
 
@@ -111,11 +110,11 @@ module.exports = function countdown(irc) {
   //in the middle of a countdown wait
   if (isBegin(input)) {
     if (!isWaiting) {
-      setParticipants(input, irc)
       if ( !(isViableSubCommand(input[0]) && isViableCountdownNumber(input[1])) ) {
         validCommands(irc)
         return
       }
+      setParticipants(input, irc)
     } else {
       irc.client.say(irc.to, 'A countdown wait is already in progress.')
       return

@@ -3,105 +3,113 @@ var util = require('util')
   , numParticipants = 0
   , isWaiting = false
 
-module.exports = function countdown(irc) {
-  var countDownCommands = {
-    ready: function(irc) {
-      if (participants.indexOf(irc.nick) < 0) {
-        participants.push(irc.nick)
-      } else {
-        irc.client.say(irc.to, util.format('You are already in the queue %s.', irc.nick))
-      }
-      if (participants.length == numParticipants) {
-        countdown(irc)
-        doneWaiting()
-      } else {
-        irc.client.say(irc.to, util.format('Waiting on %d more participants to ready', 
-          numParticipants - participants.length)
-        )
-      }
+var countDownCommands = {
+  ready: function(irc) {
+    if (participants.indexOf(irc.nick) < 0) {
+      participants.push(irc.nick)
+    } else {
+      irc.client.say(irc.to, util.format('You are already in the queue %s.', irc.nick))
     }
-
-  , cancel: function(irc) {
-      irc.client.say(irc.to, 'Cancelling wait')
-      doneWaiting()
-    }
-
-  , go: function(irc) {
-      irc.client.say(irc.to, util.format('Starting without all participants being ready.'))
+    if (participants.length == numParticipants) {
       countdown(irc)
       doneWaiting()
-    }
-
-  , begin: function(irc) {
-      isWaiting = true
-      irc.client.say(irc.to, util.format('Commands: .cd %s', commands.join(' .cd ')))
-      irc.client.say(irc.to, util.format('%s participants. Waiting on everyone to type .cd ready.',
-        numParticipants)
+    } else {
+      irc.client.say(irc.to, util.format('Waiting on %d more participants to ready', 
+        numParticipants - participants.length)
       )
     }
   }
 
-  //make an array of commands in countdowncommands
-  var commands = Object.keys(countDownCommands)
-
-  function isViableSubCommand(subcommand) {
-    return commands.indexOf(subcommand) >= 0
+, cancel: function(irc) {
+    irc.client.say(irc.to, 'Cancelling wait')
+    doneWaiting()
   }
 
-  function isViableCountdownNumber(number) {
-    return !isNaN(number)
+, go: function(irc) {
+    irc.client.say(irc.to, util.format('Starting without all participants being ready.'))
+    countdown(irc)
+    doneWaiting()
   }
 
-  function setParticipants(input) {
-    setNumParticipants(input[1])
+, begin: function(irc) {
+    isWaiting = true
+    irc.client.say(irc.to, util.format('Commands: .cd %s', commands.join(' .cd ')))
+    irc.client.say(irc.to, util.format('%s participants. Waiting on everyone to type .cd ready.',
+      numParticipants)
+    )
   }
+}
 
-  function isBegin(input) {
-    return input[0] == 'begin'
+function isViableSubCommand(subcommand) {
+  return commands.indexOf(subcommand) >= 0
+}
+
+function isViableCountdownNumber(number) {
+  return !isNaN(number)
+}
+
+function setParticipants(input) {
+  setNumParticipants(input[1])
+}
+
+function isBegin(input) {
+  return input[0] == 'begin'
+}
+
+function setNumParticipants(n) {
+  n = parseInt(n, 10)
+  numParticipants = n
+}
+
+function countdown(irc) {
+  var i = 3
+
+  if (participants.length > 0) {
+    irc.client.say(irc.to, util.format('%s, starting countdown', participants.join(', ')))
   }
+  //buffer of 2 seconds before countdown
+  global.setTimeout(function() {
+    start(i)
+  }, 2000)
 
-  function setNumParticipants(n) {
-    n = parseInt(n, 10)
-    numParticipants = n
-  }
-
-  function countdown(irc) {
-    var i = 3
-
-    if (participants.length > 0) {
-      irc.client.say(irc.to, util.format('%s, starting countdown', participants.join(', ')))
+  function start(i) {
+    irc.client.say(irc.to, i.toString())
+    if (i>0) {
+      global.setTimeout(function() {
+        start(--i)
+      }, 1000)
     }
-
-    ;(function start(i) {
-      irc.client.say(irc.to, i.toString())
-      i--
-      if (i>=0) {
-        global.setTimeout(function() {
-          start(i)
-        }, 1000)
-      }
-    }(i))
   }
+}
 
-  function commandController(subcommand, irc) {
-    //if subcommand in commands array, then get its index and run it
-    var commandIndex = commands.indexOf(subcommand)
+function commandController(subcommand, irc) {
+  //if subcommand in commands array, then get its index and run it
+  var commandIndex = commands.indexOf(subcommand)
 
-    //fn is a string, so use brackets to access
-    var fn = commands[commandIndex]
-    countDownCommands[fn](irc)
-  }
+  //fn is a string, so use brackets to access
+  var fn = commands[commandIndex]
+  countDownCommands[fn](irc)
+}
 
-  function validCommands(irc) {
-    irc.client.say(irc.to, util.format('Valid commands: .cd %s', commands.join(' .cd ')))
-    irc.client.say(irc.to, 'Make sure you enter a number after begin for number of participants.')
-  }
+function validCommands(irc) {
+  irc.client.say(irc.to, util.format('Valid commands: .cd %s', commands.join(' .cd ')))
+  irc.client.say(irc.to, 'Make sure you enter a number after begin for number of participants.')
+}
 
-  function doneWaiting() {
-    participants = []
-    numParticipants = 0
-    isWaiting = false
-  }
+function doneWaiting() {
+  participants = []
+  numParticipants = 0
+  isWaiting = false
+}
+//make an array of commands in countdowncommands
+var commands = Object.keys(countDownCommands)
+module.exports = function(irc) {
+  
+
+  
+  
+
+
 
   var input = irc.text.split(' ')
 
@@ -116,7 +124,7 @@ module.exports = function countdown(irc) {
       }
       setParticipants(input, irc)
     } else {
-      irc.client.say(irc.to, 'A countdown wait is already in progress.')
+      irc.client.say(irc.to, 'A countdown is already in progress.')
       return
     }
   //if subcommand is anything else, don't check for number
@@ -127,6 +135,7 @@ module.exports = function countdown(irc) {
       return
     }
     if (!isWaiting) {
+      irc.client.say(irc.to, 'Countdown not in progress.')
       return
     }
   }

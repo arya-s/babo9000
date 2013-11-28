@@ -101,16 +101,11 @@ function doneWaiting() {
   numParticipants = 0
   isWaiting = false
 }
+
 //make an array of commands in countdowncommands
 var commands = Object.keys(countDownCommands)
+
 module.exports = function(irc) {
-  
-
-  
-  
-
-
-
   var input = irc.text.split(' ')
 
   //we need to process the second input only if subcommand is begin,

@@ -29,6 +29,7 @@ module.exports = function(db) {
   app.get('/', routes.index);
   require('./routes/analytics')(app)
   require('./routes/analytics_api')(app, db)
+  require('./routes/help')(app)
 
   http.createServer(app).listen(app.get('port'), function(){
     console.log("Express server listening on port " + app.get('port'));

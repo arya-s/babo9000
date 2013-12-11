@@ -1,24 +1,28 @@
 module.exports = function(app, db) {
   app.get('/analytics_api', function(req, res, next) {
-    db.getAnalytics(function(err, docs) {
+    db.getAnalytics(function(err, stream) {
       if (err) {
         console.log('error getting analytics')
         next()
       } else {
-        var total = 0
-          , end = docs.length-1
-          , hosts = []
+        var first = true
+          , total = 0
+        //stream dat shiet
+        res.setHeader("Content-Type", "application/json");
+        res.write('{"hosts": [');
 
-        docs.forEach(function(doc, i) {
-          total += doc.activity
-          hosts.push({ 
-            host: doc.host
-          , activity: doc.activity
-          , nick: doc.nick
-          })
-          if (i == end) {
-            res.json({hosts: hosts, total: total})
-          }
+        stream.on('data', function(item) {
+          var prefix = first ? '' : ','
+        
+          res.write(prefix + JSON.stringify(item))
+          first = false
+          total += item.activity
+        })
+        stream.on('end', function() {
+          res.write('], "total":')
+          res.write(JSON.stringify(total))
+          res.write('}')
+          res.end()
         })
       }
     })

@@ -4,6 +4,9 @@ var config = {
   , trigger: '.'
   , username: ''
   , joinMsg: ['hello world']
+  , website: 'http://example.org'
+  , steam_username: ''
+  , steam_password: ''
 }
 
 module.exports = config

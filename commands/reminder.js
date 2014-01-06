@@ -93,8 +93,10 @@ module.exports = function(irc) {
     irc.client.say(irc.to, 'you need a message')
     return false
   } else {
-  //if pass, then create document 
-    var doc = createDoc(split[1], parsedTime)
+    //if pass, then create document
+    //join message together first
+    var msg = split.splice(1).join(' ') 
+      , doc = createDoc(msg, parsedTime)
   }
   //insert this doc into db
   irc.db.setReminder(doc, function(err) {

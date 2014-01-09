@@ -8,6 +8,7 @@ var config = {
   , steam_username: ''
   , steam_password: ''
   , steam_chatroom_id: ''
+  , master: ''
 }
 
 module.exports = config

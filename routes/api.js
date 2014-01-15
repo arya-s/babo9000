@@ -1,5 +1,8 @@
+var fs = require('fs')
+  , path = require('path')
+
 module.exports = function(app, db) {
-  app.get('/analytics_api', function(req, res, next) {
+  app.get('/analytics.json', function(req, res, next) {
     db.getAnalytics(function(err, stream) {
       if (err) {
         console.log('error getting analytics')
@@ -24,6 +27,20 @@ module.exports = function(app, db) {
           res.write('}')
           res.end()
         })
+      }
+    })
+  })
+
+  app.get('/commands.json', function(req, res) {
+    fs.readdir(path.join(__dirname, '..', 'commands'), function(err, files) {
+      if (err) {
+        console.log('error loading command', err)
+      } else {
+        //strip .js
+        var commands = files.map(function(file) {
+          return file.slice(0, file.length-3)
+        })
+        res.json(commands)
       }
     })
   })

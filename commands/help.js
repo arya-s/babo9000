@@ -1,5 +1,3 @@
-var config = require('../config.js')
-
 module.exports = function(irc) {
-  irc.client.say(irc.to, config.website)
+  irc.client.say(irc.to, global.b9config.website)
 }

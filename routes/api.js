@@ -1,5 +1,3 @@
-var config = require('../config.js')
-
 module.exports = function(app, db) {
   app.get('/analytics.json', function(req, res, next) {
     db.getAnalytics(function(err, stream) {
@@ -31,6 +29,6 @@ module.exports = function(app, db) {
   })
 
   app.get('/commands.json', function(req, res) {
-    res.json({trigger: config.trigger})
+    res.json({trigger: global.b9config.trigger})
   })
 }

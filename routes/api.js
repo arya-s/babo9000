@@ -1,5 +1,4 @@
-var fs = require('fs')
-  , path = require('path')
+var config = require('../config.js')
 
 module.exports = function(app, db) {
   app.get('/analytics.json', function(req, res, next) {
@@ -32,16 +31,6 @@ module.exports = function(app, db) {
   })
 
   app.get('/commands.json', function(req, res) {
-    fs.readdir(path.join(__dirname, '..', 'commands'), function(err, files) {
-      if (err) {
-        console.log('error loading command', err)
-      } else {
-        //strip .js
-        var commands = files.map(function(file) {
-          return file.slice(0, file.length-3)
-        })
-        res.json(commands)
-      }
-    })
+    res.json({trigger: config.trigger})
   })
 }

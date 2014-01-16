@@ -9,7 +9,7 @@ babo9000Controllers.controller('IndexCtrl', ['$scope',
 babo9000Controllers.controller('HelpCtrl', ['$scope', '$http',
   function ($scope, $http) {
     $http.get('commands.json').success(function (data) {
-      $scope.commands = data
+      $scope.trigger = data.trigger
     })
   }
 ])

@@ -1,3 +1,45 @@
 h1 Commands
-ul(ng-repeat="command in commands")
-  li {{command}}
+h1 Command trigger is {{trigger}}
+h2.command 8ball 
+p Random answer per invocation
+h2.command cd 
+p A countdown that starts from 3 to 0
+h3 Subcommands
+h4 cancel
+p Cancels current countdown queue 
+h4 begin [number]
+p Starts a queue with the number of people required for the countdown to begin.
+h4 ready
+p Readies the invoker for the current countdown wait.
+h4 go
+p Forces the countdown to start.
+h2.command dict [word]
+p Japanese to english dictionary.
+h2.command events
+h2.command help
+p Links to the bot's site index.
+h2.command mail [user] [message]
+p Relays a message to the user when that user joins the channel. Only alive for bot's session.
+h2.command reminder [XdXhXmXs] [message]
+p Highlights the invoker after time has passed with the message
+h2.command rss
+p Lists the current filters the bot uses to parse the RSS feed for anime.
+h3 Subcommands
+h4 add [filter]
+p Adds filter to the list of filters
+h4 del [filter]
+p Deletes filter from the list of filters
+h4 recent
+p Lists most recent torrents that matched any filter
+h2.command rtd
+p Random number from 1-6
+h2.command say [message]
+p Echoes message
+h2.command steam
+p Commands for interacting with the bot's Steam connection
+h3 Subcommands
+h4 reconnect
+p Reconnects the bot to Steam. Must be master.
+h2.command time
+p Gives time and date
+h2.command ugc

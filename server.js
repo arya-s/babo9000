@@ -6,9 +6,17 @@ module.exports = function(db) {
   var express = require('express')
     , routes = require('./routes')
     , http = require('http')
-    , path = require('path');
+    , path = require('path')
 
-  var app = express();
+  var app = express()
+    , server = http.createServer(app)
+    , io = require('socket.io').listen(server)
+
+  global.b9io = io
+  
+  server.listen(app.get('port'), function(){
+    console.log("Express server listening on port " + app.get('port'));
+  })
 
   app.configure(function(){
     app.set('port', process.env.PORT || 3000);
@@ -32,8 +40,6 @@ module.exports = function(db) {
   //make sure we don't 500 on refresh
   app.get('*', routes.index)
 
-  http.createServer(app).listen(app.get('port'), function(){
-    console.log("Express server listening on port " + app.get('port'));
-  });
+  
 
 }

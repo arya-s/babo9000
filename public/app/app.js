@@ -1,6 +1,7 @@
 var babo9000App = angular.module('babo9000App', [
   'ngRoute',
   'babo9000Controllers'
+  'babo9000Factories'
 ])
 
 babo9000App.config(['$routeProvider', '$locationProvider',
@@ -22,4 +23,6 @@ babo9000App.config(['$routeProvider', '$locationProvider',
         redirectTo: '/'
       })
     $locationProvider.html5Mode(true)
-  }])
+  }
+])
+

@@ -26,7 +26,9 @@ module.exports = function(db) {
     app.set('view engine', 'jade');
     app.use(express.favicon());
     app.use(express.logger('dev'));
-    app.use(express.bodyParser());
+    app.use(express.urlencoded());
+    app.use(express.json());
+    app.use(express.cookieParser(global.b9config.cookie_secret))
     app.use(express.methodOverride());
     app.use(express.static(path.join(__dirname, 'public')));
     app.use(app.router);
@@ -39,6 +41,7 @@ module.exports = function(db) {
   app.get('/', routes.index)
   app.get('/partials/:name', routes.partials)
   require('./routes/api')(app, db)
+  require('./routes/auth')(app)
   //make sure we don't 500 on refresh
   app.get('*', routes.index)
 

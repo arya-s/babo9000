@@ -46,6 +46,10 @@ babo9000App.config(['$routeProvider', '$locationProvider',
         templateUrl: 'partials/webchat',
         controller: 'WebChatCtrl'
       }).
+      when('/auth', {
+        templateUrl: 'partials/auth',
+        controller: 'AuthCtrl'
+      }).
       otherwise({
         redirectTo: '/'
       })

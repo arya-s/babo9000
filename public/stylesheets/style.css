@@ -11,3 +11,22 @@ a {
 .command {
   background-color: #EEEEEE;
 }
+
+#chat-container {
+  width:1000px;
+}
+
+#chatbox {
+  height: 240px;
+  border: black solid 1px;
+  overflow-y: auto;
+  word-wrap: break-word;
+  padding: 0 20px;
+}
+
+#input-container {
+}
+
+#input-box {
+  width:900px;
+}

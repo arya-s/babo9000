@@ -1,0 +1,8 @@
+h1 WebChat
+div#chat-container
+  div#chatbox
+    p(ng-repeat='message in messages')
+      &lt;{{message.nick}}&gt; {{message.to}} : {{message.input}}
+  div#input-container
+    input#input-box
+    button Send

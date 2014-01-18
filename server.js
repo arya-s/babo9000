@@ -11,11 +11,13 @@ module.exports = function(db) {
   var app = express()
     , server = http.createServer(app)
     , io = require('socket.io').listen(server)
+    , ircEmitter = require('./lib/helpers.js').ircEmitter
 
-  global.b9io = io
-  
-  server.listen(app.get('port'), function(){
-    console.log("Express server listening on port " + app.get('port'));
+  io.sockets.on('connection', function(socket) {
+    //emit irc events to site
+    ircEmitter.on('message', function(irc) {
+      socket.emit('message', irc)
+    })
   })
 
   app.configure(function(){
@@ -40,6 +42,8 @@ module.exports = function(db) {
   //make sure we don't 500 on refresh
   app.get('*', routes.index)
 
-  
+  server.listen(app.get('port'), function(){
+    console.log("Express server listening on port " + app.get('port'));
+  })  
 
 }

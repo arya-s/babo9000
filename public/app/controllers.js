@@ -2,7 +2,6 @@ var babo9000Controllers = angular.module('babo9000Controllers', [])
 
 babo9000Controllers.controller('IndexCtrl', ['$scope',
   function ($scope) {
-    
   }
 ])
 
@@ -64,6 +63,15 @@ babo9000Controllers.controller('AnalyticsCtrl', ['$scope', '$http',
           makeChart(data)
         }
       })
+    })
+  }
+])
+
+babo9000Controllers.controller('WebChatCtrl', ['$scope', 'socket',
+  function($scope, socket) {
+    $scope.messages = []
+    socket.on('message', function(data) {
+      $scope.messages.push(data)
     })
   }
 ])

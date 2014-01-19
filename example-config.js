@@ -10,6 +10,7 @@ var config = {
     , steam_password: ''
     , steam_chatroom_id: ''
     , master: ''
+    , cookie_secret: ''
   },
   production: {
     channel: '#yourchannel'
@@ -22,6 +23,7 @@ var config = {
     , steam_password: ''
     , steam_chatroom_id: ''
     , master: ''
+    , cookie_secret: ''
   }
 }
 

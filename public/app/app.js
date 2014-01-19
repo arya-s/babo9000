@@ -27,8 +27,8 @@ babo9000App.factory('socket', function ($rootScope) {
   }
 })
 
-babo9000App.config(['$routeProvider', '$locationProvider',
-  function ($routeProvider, $locationProvider) {
+babo9000App.config(['$routeProvider', '$locationProvider', '$httpProvider',
+  function ($routeProvider, $locationProvider, $httpProvider) {
     $routeProvider.
       when('/', {
         templateUrl: 'partials/index',
@@ -54,6 +54,29 @@ babo9000App.config(['$routeProvider', '$locationProvider',
         redirectTo: '/'
       })
     $locationProvider.html5Mode(true)
+
+    var notAuthRedirect = ['$q', '$location', function ($q, $location) {
+      var success = function (response) {
+        return response
+      }
+
+      var error = function (response) {
+        if (response.status === 403) {
+          //redirect to auth
+          $location.path('/auth')
+
+          return $q.reject(response)
+        } 
+        else {
+          return $q.reject(response)
+        }
+      }
+
+      return function (promise) {
+        return promise.then(success, error)
+      }
+    }]
+    $httpProvider.responseInterceptors.push(notAuthRedirect)
   }
 ])
 

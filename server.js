@@ -7,6 +7,7 @@ module.exports = function(db) {
     , routes = require('./routes')
     , http = require('http')
     , path = require('path')
+    , authmw = require('./routes/middleware/auth.js')
 
   var app = express()
     , server = http.createServer(app)
@@ -38,12 +39,14 @@ module.exports = function(db) {
     app.use(express.errorHandler());
   });
 
-  app.get('/', routes.index)
-  app.get('/partials/:name', routes.partials)
+  app.get('/', routes.layout)
+  app.get('/partials/auth', routes.auth)
+  app.get('/partials/:name', authmw, routes.partials)
+  //ajax routes
   require('./routes/api')(app, db)
-  require('./routes/auth')(app)
+  
   //make sure we don't 500 on refresh
-  app.get('*', routes.index)
+  app.get('*', routes.layout)
 
   server.listen(app.get('port'), function(){
     console.log("Express server listening on port " + app.get('port'));

@@ -2,15 +2,15 @@ var babo9000Controllers = angular.module('babo9000Controllers', [])
 
 babo9000Controllers.controller('IndexCtrl', ['$scope',
   function ($scope) {
-
+  
   }
 ])
 
-babo9000Controllers.controller('AuthCtrl', ['$scope', '$http',
-  function($scope, $http) {
+babo9000Controllers.controller('AuthCtrl', ['$scope', '$http', '$location',
+  function($scope, $http, $location) {
     $scope.submitSecret = function() {
       $http.post('auth', {secret: $scope.secret}).success(function(data) {
-        
+        $location.path('/index')
       })
     }
   }

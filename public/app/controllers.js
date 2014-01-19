@@ -84,5 +84,9 @@ babo9000Controllers.controller('WebChatCtrl', ['$scope', 'socket',
     socket.on('message', function(data) {
       $scope.messages.push(data)
     })
+    $scope.sendMsg = function() {
+      socket.emit('send', $scope.inputMsg)
+      $scope.inputMsg = ''
+    }
   }
 ])

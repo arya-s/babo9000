@@ -19,6 +19,9 @@ module.exports = function(db) {
     ircEmitter.on('message', function(irc) {
       socket.emit('message', irc)
     })
+    socket.on('send', function(msg) {
+      ircEmitter.emit('send', msg)
+    })
   })
 
   app.configure(function(){

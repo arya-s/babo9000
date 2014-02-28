@@ -27,10 +27,14 @@ babo9000Controllers.controller('HelpCtrl', ['$scope', '$http',
 babo9000Controllers.controller('AnalyticsCtrl', ['$scope', '$http',
   function ($scope, $http) {
     function formatData(data) {
+      //last element in data array is total
       var result = []
-      data.hosts.forEach(function(doc) {
-        result.push([doc.nick, doc.activity/data.total])
-      })
+        , data = JSON.parse(data)
+        , length = data.length
+        , total = data[length-1]
+      for (var i=0;i<length-1;i++) {
+        result.push([data[i].nick, data[i].activity/total])
+      }
       return result
     }
 

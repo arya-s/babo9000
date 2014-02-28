@@ -1,29 +1,30 @@
+var Transform = require('stream').Transform
+  , JSONStream = require('JSONStream')
+
 module.exports = function(app, db) {
   app.get('/analytics.json', function(req, res, next) {
+    var parser = new Transform({objectMode: true})
+    parser.total = 0
+    parser._transform = function(data, encoding, cb) {
+      this.total += data.activity
+      this.push(data)
+      cb()
+    }
+
+    parser._flush = function(done) {
+      this.push(this.total)
+      done()
+    }
+
     db.getAnalytics(function(err, stream) {
       if (err) {
         console.log('error getting analytics')
         next()
       } else {
-        var first = true
-          , total = 0
-        //stream dat shiet
-        res.setHeader("Content-Type", "application/json");
-        res.write('{"hosts": [');
-
-        stream.on('data', function(item) {
-          var prefix = first ? '' : ','
-        
-          res.write(prefix + JSON.stringify(item))
-          first = false
-          total += item.activity
-        })
-        stream.on('end', function() {
-          res.write('], "total":')
-          res.write(JSON.stringify(total))
-          res.write('}')
-          res.end()
-        })
+        stream
+          .pipe(parser)
+          .pipe(JSONStream.stringify())
+          .pipe(res)
       }
     })
   })

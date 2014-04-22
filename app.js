@@ -4,9 +4,13 @@
 if (process.env.NODE_ENV == 'development') global.b9config = require('./config').development
 else global.b9config = require('./config').production
 
-require('./lib/db.js')(app)
+require('./lib/cmds.js')(init);
 
-function app(db) {
+function init(cmds) {
+   require('./lib/db.js')(app, cmds);
+}
+
+function app(db, cmds) {
   require('./server.js')(db)
-  require('./lib/irc.js')(db)
+  require('./lib/irc.js')(db, cmds)
 }
